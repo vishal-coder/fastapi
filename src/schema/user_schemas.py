@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 from typing import Union
 
 class user(BaseModel):
     name:str
     designation:str
-    email:str
+    email:EmailStr
     password:str
 
 class showUser(BaseModel):

@@ -4,16 +4,19 @@ from datetime import date, datetime, time, timedelta
 from typing import Union
 from .user_schemas import showUser
 
-class project_Basic(BaseModel):   
-    name:str = Field(min_length = 2, max_length = 50)    
+class Task_Basic(BaseModel):   
+    name:str = Field(min_length = 2, max_length = 50)
+    project_id:int
 
-class project_Update(BaseModel):   
+class Task_Update(BaseModel):   
     id:int
+    project_id:int
     is_completed: bool
 
-class project(BaseModel):   
+class Task(BaseModel):   
     name:str = Field(min_length = 2, max_length = 50)
     id:int
+    project_id:int
     is_completed: bool = Field(default=False)
     created_on:datetime
    

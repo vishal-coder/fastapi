@@ -56,5 +56,6 @@ async def login(request:OAuth2PasswordRequestForm = Depends(), db:Session = Depe
 
 @router.get("/get",  response_model=List[user_schemas.showUser]) # query parameter
 async def getname(db:Session = Depends(get_db) , get_current_user: user_schemas.user = Depends(get_current_user)): # not required can be empty
+    print("get_current_user^^^^^^^^^^^^^^^^^^^^^^^",get_current_user)
     return userservice.get_all(db)
     # return db.query(models.User).all()
