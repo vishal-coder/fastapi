@@ -41,9 +41,8 @@ def updateTask(request: task_schema.Task,db: Session,current_user):
     db.commit()
     return True
 
-def deleteProject(id, db: Session,current_user):
-    data = db.query(models.Task).filter(models.Task.email == current_user,
-                                               models.Task.id == id).one_or_none()
+def deleteTask(id, db: Session):
+    data = db.query(models.Task).filter( models.Task.id == id).one_or_none()
     if data is None:
         raise HTTPException(
         status_code=404,

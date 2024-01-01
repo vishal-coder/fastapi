@@ -65,16 +65,41 @@ async def updateTask(request:task_schema.Task_Update, db:Session = Depends(get_d
     result = taskservice.updateTask(request, db, current_user)
     taskList = taskservice.get_all(request.project_id, db)
     print("request-----------list--------------------------", taskList)
+
+    # to check if remaining task status is complete or not
+    # if complete then update status of project as completed
     all_completed = all(task.is_completed == True for task in taskList)
     if all_completed:
         print("Completed")
-    else:
-        print("Not completed")
-    request.id = request.project_id
-    result = projectservice.updateProject(request, db, current_user)
+        request.id = request.project_id
+        request.is_completed = True
+        result = projectservice.updateProject(request, db, current_user)
     return {"result":result}
 
-# @router.delete("/{id}")
-# async def deleteProject(id: int, db:Session = Depends(get_db),current_user: user_schemas.user = Depends(get_current_user)):
-#     result = taskservice.deleteProject(id, db, current_user)
-#     return {"result":result}
+@router.delete("/")
+async def deleteTask(request:task_schema.Task_Update, db:Session = Depends(get_db),current_user: user_schemas.user = Depends(get_current_user)):
+    alredyexist = projectservice.getProjectByIDAndUsername(request.project_id, db, current_user)
+    if not alredyexist:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Project does not exist with {request.project_id} for given user")
+
+
+    alreadyTask = taskservice.getTaskByTaskIdAndProjectID(request, db)
+    if not alreadyTask:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Task does not exist with id {request.id} for given project or user")
+
+    result = taskservice.deleteTask(request.id, db)
+
+    # to check if remaining task status is complete or not
+    # if complete then update status of project as completed
+    taskList = taskservice.get_all(request.project_id, db)
+    print("request-----------list--------------------------", taskList)
+    all_completed = all(task.is_completed == True for task in taskList)
+    if all_completed:
+        print("Completed")
+        request.id = request.project_id
+        request.is_completed = True
+        result = projectservice.updateProject(request, db, current_user)
+
+    return {"result":result}
