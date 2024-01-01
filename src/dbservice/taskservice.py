@@ -4,22 +4,24 @@ from ..schema import task_schema
 from fastapi import HTTPException,status
 
 
-def create(request: task_schema.Task,db: Session,current_user):
-    print("request------------------------------------",request)
+def create(request: task_schema.Task, db: Session,current_user):
+    print("request------------------taskservice------------------", request)
 
-    newTask =  models.Task(name = request.name, email = current_user)
+    newTask = models.Task(name=request.name, project_id=request.project_id)
     db.add(newTask) 
     db.commit()
     db.refresh(newTask)
+    print("request------------------taskservice------------------", newTask)
+
     return newTask
 
 def get_all(db: Session, username):
     projects = db.query(models.Task).filter(models.Task.email == username).all()
     return projects
 
-def getTaskByNameAndUsername(request: task_schema.Task,db: Session, current_user):
-    project = db.query(models.Task).filter(models.Task.name == request.name, models.Task.email == current_user ).first()
-    return project
+def getTaskByNameAndProjectID(request: task_schema.Task,db: Session):
+    task = db.query(models.Task).filter(models.Task.name == request.name, models.Task.project_id == request.project_id).one_or_none()
+    return task
 
 def updateProject(request: task_schema.Task,db: Session,current_user):
     print("request------------------------------------",request)

@@ -19,8 +19,8 @@ def getProjectByNameAndUsername(request: project_schema.project,db: Session, cur
     project = db.query(models.Project).filter(models.Project.name == request.name, models.Project.email == current_user ).first()
     return project
 
-def getProjectByIDAndUsername(request: project_schema.project,db: Session, current_user):
-    project = db.query(models.Project).filter(models.Project.id == request.id, models.Project.email == current_user ).one_or_none()
+def getProjectByIDAndUsername(id, db: Session, current_user):
+    project = db.query(models.Project).filter(models.Project.id == id, models.Project.email == current_user ).one_or_none()
     if project is None:
         raise HTTPException(
         status_code=404,

@@ -28,7 +28,7 @@ async def create(request:project_schema.project_Basic, db: Session = Depends(get
     print("alredyexist++++++++++++++++",alredyexist)
     if alredyexist:
         raise HTTPException(status_code= status.HTTP_409_CONFLICT,
-                            detail = f"Project already exist with {request.name} email id" )
+                            detail = f"Project already exist with {request.name} for given user" )
     
     newProject = projectservice.create(request, db,current_user)
     return newProject
