@@ -8,7 +8,8 @@ class Task_Basic(BaseModel):
     name:str = Field(min_length = 2, max_length = 50)
     project_id:int
 
-class Task_Update(BaseModel):   
+class Task_Update(BaseModel):
+    name:str
     id:int
     project_id:int
     is_completed: bool

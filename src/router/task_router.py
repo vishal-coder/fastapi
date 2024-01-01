@@ -49,10 +49,30 @@ async def getAll(project_id:int, db:Session = Depends(get_db) , current_user: us
     return {"data" : list}
 
 
-# @router.put("/") # query parameter
-# async def updateProject(request:task_schema.project_Update,db:Session = Depends(get_db) , current_user: user_schemas.user = Depends(get_current_user)): # not required can be empty
-#     result = taskservice.updateProject(request, db,current_user)
-#     return {"result":result}
+@router.put("/") # query parameter
+async def updateTask(request:task_schema.Task_Update, db:Session = Depends(get_db) , current_user: user_schemas.user = Depends(get_current_user)):
+    alredyexist = projectservice.getProjectByIDAndUsername(request.project_id, db, current_user)
+    if not alredyexist:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Project does not exist with {request.project_id} for given user")
+
+
+    alreadyTask = taskservice.getTaskByTaskIdAndProjectID(request, db)
+    if not alreadyTask:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Task does not exist with id {request.id} for given project or user")
+
+    result = taskservice.updateTask(request, db, current_user)
+    taskList = taskservice.get_all(request.project_id, db)
+    print("request-----------list--------------------------", taskList)
+    all_completed = all(task.is_completed == True for task in taskList)
+    if all_completed:
+        print("Completed")
+    else:
+        print("Not completed")
+    request.id = request.project_id
+    result = projectservice.updateProject(request, db, current_user)
+    return {"result":result}
 
 # @router.delete("/{id}")
 # async def deleteProject(id: int, db:Session = Depends(get_db),current_user: user_schemas.user = Depends(get_current_user)):

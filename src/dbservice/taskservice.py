@@ -23,10 +23,13 @@ def getTaskByNameAndProjectID(request: task_schema.Task,db: Session):
     task = db.query(models.Task).filter(models.Task.name == request.name, models.Task.project_id == request.project_id).one_or_none()
     return task
 
-def updateProject(request: task_schema.Task,db: Session,current_user):
+def getTaskByTaskIdAndProjectID(request: task_schema.Task,db: Session):
+    task = db.query(models.Task).filter(models.Task.id == request.id, models.Task.project_id == request.project_id).one_or_none()
+    return task
+
+def updateTask(request: task_schema.Task,db: Session,current_user):
     print("request------------------------------------",request)
-    data = db.query(models.Task).filter(models.Task.email == current_user,
-                                               models.Task.id == request.id).one_or_none()
+    data = db.query(models.Task).filter(models.Task.id == request.id).one_or_none()
     if data is None:
         raise HTTPException(
         status_code=404,
@@ -34,6 +37,7 @@ def updateProject(request: task_schema.Task,db: Session,current_user):
         )
 
     data.is_completed = request.is_completed
+    data.name = request.name
     db.commit()
     return True
 

@@ -38,6 +38,7 @@ def updateProject(request: project_schema.project,db: Session,current_user):
         )
 
     data.is_completed = request.is_completed
+    data.name = request.name
     db.commit()
     return True
 
