@@ -15,8 +15,8 @@ def create(request: task_schema.Task, db: Session,current_user):
 
     return newTask
 
-def get_all(db: Session, username):
-    projects = db.query(models.Task).filter(models.Task.email == username).all()
+def get_all(project_id, db: Session,):
+    projects = db.query(models.Task).filter(models.Task.project_id == project_id).all()
     return projects
 
 def getTaskByNameAndProjectID(request: task_schema.Task,db: Session):

@@ -33,14 +33,21 @@ async def create(request: task_schema.Task_Basic, db: Session = Depends(get_db),
     if alreadyTask:
         raise HTTPException(status_code= status.HTTP_409_CONFLICT,
                             detail=f"Task already exist with name {request.name} for given project" )
-    print("request-----------alreadyTask--------------------------", alreadyTask)
     taskservice.create(request, db, current_user)
     return {"result": True}
 
-# @router.get("/get",  response_model=List[task_schema.project]) # query parameter
-# async def getname(db:Session = Depends(get_db) , current_user: user_schemas.user = Depends(get_current_user)): # not required can be empty
-#     return taskservice.get_all(db,current_user)
-#     # return db.query(models.User).all()
+@router.get("/{project_id}",  response_model=List[task_schema.Task]) # query parameter
+async def getAll(project_id:int, db:Session = Depends(get_db) , current_user: user_schemas.user = Depends(get_current_user)):
+    alredyexist = projectservice.getProjectByIDAndUsername(project_id, db, current_user)
+    if not alredyexist:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail=f"Project does not exist with {project_id} for given user")
+
+    list = taskservice.get_all(project_id, db)
+    print("request-----------list--------------------------", list)
+
+    return {"data" : list}
+
 
 # @router.put("/") # query parameter
 # async def updateProject(request:task_schema.project_Update,db:Session = Depends(get_db) , current_user: user_schemas.user = Depends(get_current_user)): # not required can be empty
